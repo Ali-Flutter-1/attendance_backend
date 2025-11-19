@@ -24,6 +24,9 @@ namespace attendance.Models
         [MaxLength(100)]
         public string Email { get; set; } = string.Empty;
 
+        [MaxLength(256)]
+        public string? PasswordHash { get; set; }
+
         [MaxLength(100)]
         public string? Domain { get; set; }
 

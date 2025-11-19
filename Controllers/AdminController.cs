@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using attendance.DTOs;
 using attendance.Data;
 using attendance.Services;
+using attendance.Models;
 
 namespace attendance.Controllers
 {
@@ -20,68 +21,6 @@ namespace attendance.Controllers
         {
             _context = context;
             _attendanceService = attendanceService;
-        }
-
-        /// <summary>
-        /// Create a new user (for testing/setup)
-        /// POST: api/admin/users
-        /// </summary>
-        [HttpPost("users")]
-        public async Task<ActionResult<ApiResponse<UserResponse>>> CreateUser([FromBody] CreateUserRequest request)
-        {
-            try
-            {
-                // Check if email already exists
-                var emailExists = await _context.Users.AnyAsync(u => u.Email == request.Email);
-                if (emailExists)
-                {
-                    return BadRequest(new ApiResponse<UserResponse>
-                    {
-                        Success = false,
-                        Message = "Email already exists"
-                    });
-                }
-
-                var user = new Models.User
-                {
-                    FirstName = request.FirstName,
-                    LastName = request.LastName,
-                    Email = request.Email,
-                    Domain = request.Domain,
-                    Address = request.Address,
-                    IsAdmin = request.IsAdmin ?? false
-                };
-
-                _context.Users.Add(user);
-                await _context.SaveChangesAsync();
-
-                var response = new UserResponse
-                {
-                    Id = user.Id,
-                    FirstName = user.FirstName,
-                    LastName = user.LastName,
-                    Email = user.Email,
-                    Domain = user.Domain,
-                    Address = user.Address,
-                    ProfilePicturePath = user.ProfilePicturePath,
-                    IsAdmin = user.IsAdmin
-                };
-
-                return Ok(new ApiResponse<UserResponse>
-                {
-                    Success = true,
-                    Message = "User created successfully",
-                    Data = response
-                });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new ApiResponse<UserResponse>
-                {
-                    Success = false,
-                    Message = $"Error: {ex.Message}"
-                });
-            }
         }
 
         /// <summary>
@@ -161,7 +100,7 @@ namespace attendance.Controllers
                 // Default to last 30 days if no dates provided
                 if (!startDate.HasValue && !endDate.HasValue)
                 {
-                    var defaultStartDate = DateTime.UtcNow.AddDays(-30).Date;
+                    var defaultStartDate = TimeZoneService.GetKarachiDate().AddDays(-30);
                     query = query.Where(a => a.Date >= defaultStartDate);
                 }
 
@@ -213,8 +152,8 @@ namespace attendance.Controllers
         {
             try
             {
-                if (year == 0) year = DateTime.UtcNow.Year;
-                if (month == 0) month = DateTime.UtcNow.Month;
+                if (year == 0) year = TimeZoneService.GetKarachiYear();
+                if (month == 0) month = TimeZoneService.GetKarachiMonth();
 
                 var monthlyAttendance = await _attendanceService.GetMonthlyAttendanceAsync(userId, year, month);
 
@@ -282,96 +221,7 @@ namespace attendance.Controllers
             }
         }
 
-        /// <summary>
-        /// Configure office location
-        /// POST: api/admin/office-location
-        /// </summary>
-        [HttpPost("office-location")]
-        public async Task<ActionResult<ApiResponse<object>>> SetOfficeLocation(
-            [FromBody] OfficeLocationRequest request)
-        {
-            try
-            {
-                // Deactivate all existing locations
-                var existingLocations = await _context.OfficeLocations.Where(o => o.IsActive).ToListAsync();
-                foreach (var loc in existingLocations)
-                {
-                    loc.IsActive = false;
-                }
-
-                // Create or update active location
-                var location = await _context.OfficeLocations
-                    .FirstOrDefaultAsync(l => l.Latitude == request.Latitude && l.Longitude == request.Longitude);
-
-                if (location == null)
-                {
-                    location = new Models.OfficeLocation
-                    {
-                        Name = request.Name ?? "Main Office",
-                        Latitude = request.Latitude,
-                        Longitude = request.Longitude,
-                        AllowedRadiusInMeters = request.AllowedRadiusInMeters,
-                        IsActive = true
-                    };
-                    _context.OfficeLocations.Add(location);
-                }
-                else
-                {
-                    location.Name = request.Name ?? location.Name;
-                    location.AllowedRadiusInMeters = request.AllowedRadiusInMeters;
-                    location.IsActive = true;
-                }
-
-                await _context.SaveChangesAsync();
-
-                return Ok(new ApiResponse<object>
-                {
-                    Success = true,
-                    Message = "Office location configured successfully",
-                    Data = new
-                    {
-                        location.Id,
-                        location.Name,
-                        location.Latitude,
-                        location.Longitude,
-                        location.AllowedRadiusInMeters,
-                        location.IsActive
-                    }
-                });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new ApiResponse<object>
-                {
-                    Success = false,
-                    Message = $"Error: {ex.Message}"
-                });
-            }
-        }
     }
 
-    /// <summary>
-    /// DTO for office location configuration
-    /// </summary>
-    public class OfficeLocationRequest
-    {
-        public string? Name { get; set; }
-        public double Latitude { get; set; }
-        public double Longitude { get; set; }
-        public double AllowedRadiusInMeters { get; set; } = 50.0;
-    }
-
-    /// <summary>
-    /// DTO for creating a new user
-    /// </summary>
-    public class CreateUserRequest
-    {
-        public string FirstName { get; set; } = string.Empty;
-        public string LastName { get; set; } = string.Empty;
-        public string Email { get; set; } = string.Empty;
-        public string? Domain { get; set; }
-        public string? Address { get; set; }
-        public bool? IsAdmin { get; set; }
-    }
 }
 

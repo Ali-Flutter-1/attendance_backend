@@ -116,8 +116,8 @@ namespace attendance.Controllers
                 if (request.Domain != null)
                     user.Domain = request.Domain;
 
-                // Handle profile picture upload
-                var pictureFile = Request.Form.Files.FirstOrDefault();
+                // Handle profile picture upload - check for "picture" field name
+                var pictureFile = Request.Form.Files["picture"] ?? Request.Form.Files.FirstOrDefault();
                 if (pictureFile != null && pictureFile.Length > 0)
                 {
                     // Delete old picture if exists
@@ -130,7 +130,7 @@ namespace attendance.Controllers
                     user.ProfilePicturePath = await _fileService.SaveProfilePictureAsync(pictureFile, request.UserId);
                 }
 
-                user.UpdatedAt = DateTime.UtcNow;
+                user.UpdatedAt = TimeZoneService.GetKarachiTime();
                 await _context.SaveChangesAsync();
 
                 var response = new UserResponse

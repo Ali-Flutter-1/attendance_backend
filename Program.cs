@@ -27,6 +27,7 @@ builder.Services.AddScoped<LocationService>();
 builder.Services.AddScoped<AttendanceService>();
 builder.Services.AddScoped<FileService>();
 builder.Services.AddScoped<OfficeLocationService>();
+builder.Services.AddScoped<PasswordService>();
 
 // Add controllers (API only, no views)
 builder.Services.AddControllers();

@@ -105,7 +105,7 @@ VALUES (
     1,                              -- UserId
     CAST(GETUTCDATE() AS DATE),     -- Today's date
     GETUTCDATE(),                   -- Current UTC time
-    40.741895,                      -- Latitude
+    31.413239,                      -- Latitude
     -73.989308,                     -- Longitude
     'uploads/attendance-pictures/1/checkin/abc123.jpg',
     1,                              -- IsPresent = true
@@ -122,7 +122,7 @@ VALUES (
 UPDATE Attendances
 SET 
     CheckOutTime = GETUTCDATE(),
-    CheckOutLatitude = 40.741895,
+    CheckOutLatitude = 31.413239,
     CheckOutLongitude = -73.989308,
     CheckOutPicturePath = 'uploads/attendance-pictures/1/checkout/xyz789.jpg',
     IsEarlyCheckOut = 0             -- 0 = on time, 1 = early
@@ -376,7 +376,7 @@ WHERE StartDate <= '2024-01-31'
 
 ## 📍 OFFICE LOCATION OPERATIONS
 
-### 1. Set Office Location (POST /api/admin/office-location)
+### 1. Set Office Location (SQL Only - No API Endpoint)
 
 ```sql
 -- Insert office location
@@ -390,7 +390,7 @@ INSERT INTO OfficeLocations (
 )
 VALUES (
     'Main Office',
-    40.741895,
+    31.413239,
     -73.989308,
     50.0,
     1,  -- IsActive = true
@@ -444,7 +444,7 @@ SELECT * FROM OfficeLocations ORDER BY CreatedAt DESC;
 UPDATE OfficeLocations
 SET 
     Name = 'Updated Office Name',
-    Latitude = 40.760000,
+    Latitude = 31.413239,
     Longitude = -74.010000,
     AllowedRadiusInMeters = 75.0
 WHERE Id = 1;
@@ -646,7 +646,7 @@ WHERE UserId = 1 AND Date = CAST(GETUTCDATE() AS DATE);
 
 -- 3. Insert check-in
 INSERT INTO Attendances (UserId, Date, CheckInTime, CheckInLatitude, CheckInLongitude, CheckInPicturePath, IsPresent, IsAbsent, IsLateCheckIn, CreatedAt)
-VALUES (1, CAST(GETUTCDATE() AS DATE), GETUTCDATE(), 40.741895, -73.989308, 'uploads/attendance-pictures/1/checkin/pic.jpg', 1, 0, 0, GETUTCDATE());
+VALUES (1, CAST(GETUTCDATE() AS DATE), GETUTCDATE(), 31.413239, -73.989308, 'uploads/attendance-pictures/1/checkin/pic.jpg', 1, 0, 0, GETUTCDATE());
 
 -- 4. Verify check-in
 SELECT * FROM Attendances WHERE UserId = 1 AND Date = CAST(GETUTCDATE() AS DATE);

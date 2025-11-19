@@ -1,6 +1,7 @@
 using attendance.Data;
 using attendance.DTOs;
 using attendance.Models;
+using attendance.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace attendance.Services
@@ -22,7 +23,7 @@ namespace attendance.Services
         /// </summary>
         public async Task<bool> HasCheckedInTodayAsync(int userId)
         {
-            var today = DateTime.UtcNow.Date;
+            var today = TimeZoneService.GetKarachiDate();
             return await _context.Attendances
                 .AnyAsync(a => a.UserId == userId && a.Date == today && a.CheckInTime != null);
         }
@@ -32,7 +33,7 @@ namespace attendance.Services
         /// </summary>
         public async Task<bool> HasCheckedOutTodayAsync(int userId)
         {
-            var today = DateTime.UtcNow.Date;
+            var today = TimeZoneService.GetKarachiDate();
             return await _context.Attendances
                 .AnyAsync(a => a.UserId == userId && a.Date == today && a.CheckOutTime != null);
         }
@@ -42,7 +43,7 @@ namespace attendance.Services
         /// </summary>
         public async Task<Attendance?> GetTodayAttendanceAsync(int userId)
         {
-            var today = DateTime.UtcNow.Date;
+            var today = TimeZoneService.GetKarachiDate();
             return await _context.Attendances
                 .FirstOrDefaultAsync(a => a.UserId == userId && a.Date == today);
         }

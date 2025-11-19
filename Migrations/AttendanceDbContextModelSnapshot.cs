@@ -208,6 +208,10 @@ namespace attendance.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<string>("PasswordHash")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
                     b.Property<string>("ProfilePicturePath")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");

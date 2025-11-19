@@ -343,36 +343,26 @@ All endpoints return JSON in this format:
 
 ---
 
-### 5. Set Office Location
-**POST** `/api/admin/office-location`
-
-**Content-Type:** `application/json`
-
-**Body:**
-```json
-{
-  "name": "Main Office",
-  "latitude": 40.7128,
-  "longitude": -74.0060,
-  "allowedRadiusInMeters": 50
-}
-```
+### 5. Get Office Location
+**GET** `/api/admin/office-location`
 
 **Response:**
 ```json
 {
   "success": true,
-  "message": "Office location configured successfully",
+  "message": "Office location retrieved successfully",
   "data": {
     "id": 1,
     "name": "Main Office",
-    "latitude": 40.7128,
-    "longitude": -74.0060,
+    "latitude": 31.413239,
+    "longitude": 73.0988347,
     "allowedRadiusInMeters": 50,
     "isActive": true
   }
 }
 ```
+
+**Note:** Office location is configured via `appsettings.json` or directly in the database using SQL. There is no POST endpoint for setting office location.
 
 ---
 
@@ -426,7 +416,7 @@ All endpoints return JSON in this format:
 ```bash
 curl -X POST "https://localhost:7225/api/attendance/checkin" \
   -F "userId=1" \
-  -F "latitude=40.7128" \
+  -F "latitude=31.413239" \
   -F "longitude=-74.0060" \
   -F "picture=@/path/to/image.jpg"
 ```

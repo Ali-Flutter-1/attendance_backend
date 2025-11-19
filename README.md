@@ -64,19 +64,20 @@ dotnet ef database update
 
 ### Step 4: Configure Office Location
 
-Before users can check in, you need to set the office location. Use the Admin API:
+Before users can check in, you need to set the office location. Update `appsettings.json` with your office coordinates:
 
-```http
-POST /api/admin/office-location
-Content-Type: application/json
-
+```json
 {
-  "name": "Main Office",
-  "latitude": 40.741895,  // Your office latitude
-  "longitude": -73.989308,  // Your office longitude
-  "allowedRadiusInMeters": 50
+  "OfficeLocation": {
+    "Name": "Main Office",
+    "Latitude": 31.413239,  // Your office latitude
+    "Longitude": 73.0988347,  // Your office longitude
+    "AllowedRadiusInMeters": 50
+  }
 }
 ```
+
+The office location will be automatically initialized from `appsettings.json` when the API starts. Alternatively, you can update it directly in the database using SQL (see `UPDATE_OFFICE_LOCATION.sql`).
 
 ### Step 5: Run the API
 
@@ -100,7 +101,7 @@ Content-Type: multipart/form-data
 
 Form Data:
 - UserId: 1
-- Latitude: 40.7128
+- Latitude: 31.413239
 - Longitude: -74.0060
 - Picture: [image file]
 ```
@@ -112,7 +113,7 @@ Content-Type: multipart/form-data
 
 Form Data:
 - UserId: 1
-- Latitude: 40.7128
+- Latitude: 31.413239
 - Longitude: -74.0060
 - Picture: [image file]
 ```
@@ -203,18 +204,12 @@ GET /api/admin/activities?startDate=2024-01-01&endDate=2024-01-31&userId=1
 GET /api/admin/statistics/{userId}?year=2024&month=1
 ```
 
-#### Set Office Location
+#### Get Office Location
 ```http
-POST /api/admin/office-location
-Content-Type: application/json
-
-{
-  "name": "Main Office",
-  "latitude": 40.7128,
-  "longitude": -74.0060,
-  "allowedRadiusInMeters": 50
-}
+GET /api/admin/office-location
 ```
+
+Returns the current office location configuration. Office location is configured via `appsettings.json` or directly in the database using SQL.
 
 ## Database Schema
 
@@ -324,7 +319,7 @@ var request = http.MultipartRequest(
 );
 
 request.fields['userId'] = '1';
-request.fields['latitude'] = '40.7128';
+request.fields['latitude'] = '31.413239';
 request.fields['longitude'] = '-74.0060';
 request.files.add(await http.MultipartFile.fromPath('picture', imagePath));
 

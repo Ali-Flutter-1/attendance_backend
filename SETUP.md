@@ -111,21 +111,20 @@ VALUES ('John', 'Doe', 'john@company.com', 'HR', 0, GETUTCDATE());
 
 ### Set Office Location
 
-Use the Admin API endpoint:
+Update `appsettings.json` with your office coordinates:
 
-```http
-POST https://localhost:7225/api/admin/office-location
-Content-Type: application/json
-
+```json
 {
-  "name": "Main Office",
-  "latitude": 40.7128,
-  "longitude": -74.0060,
-  "allowedRadiusInMeters": 50
+  "OfficeLocation": {
+    "Name": "Main Office",
+    "Latitude": 31.413239,
+    "Longitude": 73.0988347,
+    "AllowedRadiusInMeters": 50
+  }
 }
 ```
 
-Replace the latitude/longitude with your actual office coordinates.
+The office location will be automatically initialized from `appsettings.json` when the API starts. Alternatively, you can update it directly in the database using SQL (see `UPDATE_OFFICE_LOCATION.sql`).
 
 ## Step 8: Test Check-In
 
@@ -138,7 +137,7 @@ Content-Type: multipart/form-data
 
 Form Data:
 - UserId: 1
-- Latitude: [your office latitude]
+- Latitude: 31.413239
 - Longitude: [your office longitude]
 - Picture: [select an image file]
 ```

@@ -142,3 +142,4 @@ D:\Apis\attendance\attendance\obj\Debug\net8.0\attendance.pdb
 D:\Apis\attendance\attendance\obj\Debug\net8.0\attendance.genruntimeconfig.cache
 D:\Apis\attendance\attendance\obj\Debug\net8.0\ref\attendance.dll
 D:\Apis\attendance\attendance\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
+D:\Apis\attendance\attendance\obj\Debug\net8.0\attendance.sourcelink.json

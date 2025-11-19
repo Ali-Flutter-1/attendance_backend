@@ -12,8 +12,8 @@ Open `appsettings.json` and update the coordinates to your actual office locatio
 {
   "OfficeLocation": {
     "Name": "Main Office",
-    "Latitude": 24.8607,      // Replace with your office latitude
-    "Longitude": 67.0011,      // Replace with your office longitude
+    "Latitude": 31.413239,      // Replace with your office latitude
+    "Longitude": -73.989308,      // Replace with your office longitude
     "AllowedRadiusInMeters": 50  // Distance in meters (default: 50m)
   }
 }
@@ -70,7 +70,7 @@ GET https://localhost:7225/api/admin/office-location
   "data": {
     "id": 1,
     "name": "Main Office",
-    "latitude": 24.8607,
+    "latitude": 31.413239,
     "longitude": 67.0011,
     "allowedRadiusInMeters": 50,
     "isActive": true
@@ -78,21 +78,9 @@ GET https://localhost:7225/api/admin/office-location
 }
 ```
 
-## Step 4: Update Office Location via API (Optional)
+## Step 4: Update Office Location via SQL (Optional)
 
-You can also update the office location using the API:
-
-```http
-POST https://localhost:7225/api/admin/office-location
-Content-Type: application/json
-
-{
-  "name": "Main Office",
-  "latitude": 24.8607,
-  "longitude": 67.0011,
-  "allowedRadiusInMeters": 50
-}
-```
+You can also update the office location directly in the database using SQL. See `UPDATE_OFFICE_LOCATION.sql` for the SQL script.
 
 ## How It Works
 
@@ -139,7 +127,7 @@ Here are some example coordinates for major cities:
 **Solutions:**
 1. Update `appsettings.json` with correct coordinates
 2. Restart the API
-3. Or use the API endpoint to update: `POST /api/admin/office-location`
+3. Or update directly in the database using SQL (see `UPDATE_OFFICE_LOCATION.sql`)
 
 ### Location Verification Not Working
 

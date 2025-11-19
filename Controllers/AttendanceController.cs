@@ -96,13 +96,15 @@ namespace attendance.Controllers
                 
                 var startTime = TimeSpan.Parse(startTimeStr);
                 var endTime = TimeSpan.Parse(endTimeStr);
-                var currentTime = DateTime.UtcNow.TimeOfDay;
+                var karachiTime = TimeZoneService.GetKarachiTime();
+                var currentTime = karachiTime.TimeOfDay;
                 
-                // Check if check-in is late (after 9 AM)
+                // Check if check-in is late (arrives after the start time, e.g., after 9 AM)
+                // If user arrives at 10 AM and start time is 9 AM, they are late
                 var isLateCheckIn = currentTime > startTime;
 
                 // Get or create today's attendance record
-                var today = DateTime.UtcNow.Date;
+                var today = TimeZoneService.GetKarachiDate();
                 var attendance = await _attendanceService.GetTodayAttendanceAsync(request.UserId);
 
                 if (attendance == null)
@@ -111,7 +113,7 @@ namespace attendance.Controllers
                     {
                         UserId = request.UserId,
                         Date = today,
-                        CheckInTime = DateTime.UtcNow,
+                        CheckInTime = karachiTime,
                         CheckInLatitude = request.Latitude,
                         CheckInLongitude = request.Longitude,
                         CheckInPicturePath = picturePath,
@@ -123,7 +125,7 @@ namespace attendance.Controllers
                 }
                 else
                 {
-                    attendance.CheckInTime = DateTime.UtcNow;
+                    attendance.CheckInTime = TimeZoneService.GetKarachiTime();
                     attendance.CheckInLatitude = request.Latitude;
                     attendance.CheckInLongitude = request.Longitude;
                     attendance.CheckInPicturePath = picturePath;
@@ -238,9 +240,11 @@ namespace attendance.Controllers
                 var workingHours = _configuration.GetSection("WorkingHours");
                 var endTimeStr = workingHours.GetValue<string>("EndTime") ?? "18:00";
                 var endTime = TimeSpan.Parse(endTimeStr);
-                var currentTime = DateTime.UtcNow.TimeOfDay;
+                var karachiTime = TimeZoneService.GetKarachiTime();
+                var currentTime = karachiTime.TimeOfDay;
                 
-                // Check if check-out is early (before 6 PM)
+                // Check if check-out is early (leaves before the end time, e.g., before 6 PM)
+                // If user leaves at 5 PM and end time is 6 PM, they are early
                 var isEarlyCheckOut = currentTime < endTime;
 
                 // Get today's attendance record
@@ -254,7 +258,7 @@ namespace attendance.Controllers
                     });
                 }
 
-                attendance.CheckOutTime = DateTime.UtcNow;
+                attendance.CheckOutTime = karachiTime;
                 attendance.CheckOutLatitude = request.Latitude;
                 attendance.CheckOutLongitude = request.Longitude;
                 attendance.CheckOutPicturePath = picturePath;
@@ -366,8 +370,8 @@ namespace attendance.Controllers
             try
             {
                 // Default to current month if not specified
-                if (year == 0) year = DateTime.UtcNow.Year;
-                if (month == 0) month = DateTime.UtcNow.Month;
+                if (year == 0) year = TimeZoneService.GetKarachiYear();
+                if (month == 0) month = TimeZoneService.GetKarachiMonth();
 
                 var monthlyAttendance = await _attendanceService.GetMonthlyAttendanceAsync(userId, year, month);
 

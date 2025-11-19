@@ -51,7 +51,7 @@ namespace attendance.Controllers
                     });
                 }
 
-                if (request.StartDate < DateTime.UtcNow.Date)
+                if (request.StartDate < TimeZoneService.GetKarachiDate())
                 {
                     return BadRequest(new ApiResponse<LeaveResponse>
                     {
@@ -160,6 +160,9 @@ namespace attendance.Controllers
             }
         }
 
+
+
+
         /// <summary>
         /// Get all pending leaves (for admin)
         /// GET: api/leave/pending
@@ -249,7 +252,7 @@ namespace attendance.Controllers
 
                 leave.Status = (LeaveStatus)request.Status;
                 leave.AdminRemarks = request.AdminRemarks;
-                leave.UpdatedAt = DateTime.UtcNow;
+                leave.UpdatedAt = TimeZoneService.GetKarachiTime();
 
                 await _context.SaveChangesAsync();
 

@@ -19,10 +19,17 @@ namespace attendance.Services
         }
 
         /// <summary>
-        /// Initialize office location from appsettings.json if it doesn't exist
+        /// Initialize or update office location from appsettings.json
         /// </summary>
         public async Task InitializeOfficeLocationAsync()
         {
+            // Get default location from appsettings.json
+            var officeConfig = _configuration.GetSection("OfficeLocation");
+            var latitude = officeConfig.GetValue<double>("Latitude");
+            var longitude = officeConfig.GetValue<double>("Longitude");
+            var name = officeConfig.GetValue<string>("Name") ?? "Main Office";
+            var radius = officeConfig.GetValue<double>("AllowedRadiusInMeters");
+
             // Check if office location already exists
             var existingLocation = await _context.OfficeLocations
                 .Where(o => o.IsActive)
@@ -30,14 +37,7 @@ namespace attendance.Services
 
             if (existingLocation == null)
             {
-                // Get default location from appsettings.json
-                var officeConfig = _configuration.GetSection("OfficeLocation");
-                var latitude = officeConfig.GetValue<double>("Latitude");
-                var longitude = officeConfig.GetValue<double>("Longitude");
-                var name = officeConfig.GetValue<string>("Name") ?? "Main Office";
-                var radius = officeConfig.GetValue<double>("AllowedRadiusInMeters");
-
-                // Create default office location
+                // Create new office location
                 var officeLocation = new OfficeLocation
                 {
                     Name = name,
@@ -49,6 +49,22 @@ namespace attendance.Services
 
                 _context.OfficeLocations.Add(officeLocation);
                 await _context.SaveChangesAsync();
+            }
+            else
+            {
+                // Update existing location if coordinates or radius changed
+                var coordinatesChanged = Math.Abs(existingLocation.Latitude - latitude) > 0.000001 ||
+                                       Math.Abs(existingLocation.Longitude - longitude) > 0.000001;
+                var radiusChanged = Math.Abs(existingLocation.AllowedRadiusInMeters - radius) > 0.01;
+
+                if (coordinatesChanged || radiusChanged)
+                {
+                    existingLocation.Latitude = latitude;
+                    existingLocation.Longitude = longitude;
+                    existingLocation.AllowedRadiusInMeters = radius > 0 ? radius : 50.0;
+                    existingLocation.Name = name;
+                    await _context.SaveChangesAsync();
+                }
             }
         }
     }

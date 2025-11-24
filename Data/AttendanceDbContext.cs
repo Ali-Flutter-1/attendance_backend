@@ -27,7 +27,7 @@ namespace attendance.Data
             modelBuilder.Entity<User>(entity =>
             {
                 entity.HasIndex(e => e.Email).IsUnique();
-                entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
+                entity.Property(e => e.CreatedAt).HasDefaultValueSql("UTC_TIMESTAMP()");
             });
 
             // Configure Attendance entity
@@ -36,7 +36,7 @@ namespace attendance.Data
                 // Ensure one attendance record per user per day
                 entity.HasIndex(e => new { e.UserId, e.Date }).IsUnique();
                 
-                entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
+                entity.Property(e => e.CreatedAt).HasDefaultValueSql("UTC_TIMESTAMP()");
                 
                 entity.HasOne(e => e.User)
                       .WithMany(u => u.Attendances)
@@ -47,7 +47,7 @@ namespace attendance.Data
             // Configure Leave entity
             modelBuilder.Entity<Leave>(entity =>
             {
-                entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
+                entity.Property(e => e.CreatedAt).HasDefaultValueSql("UTC_TIMESTAMP()");
                 
                 entity.HasOne(e => e.User)
                       .WithMany(u => u.Leaves)
@@ -58,7 +58,7 @@ namespace attendance.Data
             // Configure OfficeLocation entity
             modelBuilder.Entity<OfficeLocation>(entity =>
             {
-                entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
+                entity.Property(e => e.CreatedAt).HasDefaultValueSql("UTC_TIMESTAMP()");
             });
         }
     }

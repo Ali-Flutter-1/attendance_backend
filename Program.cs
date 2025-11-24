@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using attendance.Data;
 using attendance.Services;
+using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,9 +19,10 @@ builder.Services.AddCors(options =>
         });
 });
 
-// Add Entity Framework with SQL Server
+// Add Entity Framework with MySQL
 builder.Services.AddDbContext<AttendanceDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"), 
+        new MySqlServerVersion(new Version(8, 0, 21))));
 
 // Register services
 builder.Services.AddScoped<LocationService>();

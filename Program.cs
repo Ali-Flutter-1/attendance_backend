@@ -22,7 +22,11 @@ builder.Services.AddCors(options =>
 // Add Entity Framework with MySQL
 builder.Services.AddDbContext<AttendanceDbContext>(options =>
     options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"), 
-        new MySqlServerVersion(new Version(8, 0, 21))));
+        new MySqlServerVersion(new Version(8, 0, 21)),
+        mySqlOptions => mySqlOptions.EnableRetryOnFailure(
+            maxRetryCount: 5,
+            maxRetryDelay: TimeSpan.FromSeconds(30),
+            errorNumbersToAdd: null)));
 
 // Register services
 builder.Services.AddScoped<LocationService>();
